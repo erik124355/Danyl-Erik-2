@@ -61,7 +61,64 @@ npm install
 `git clone` lataa projektin omalle tietokoneelle. `cd tiimi` siirtyy projektikansioon.
 `npm install` asentaa projektin riippuvuudet.
 
-## 4. Ennen uuden tehtävän aloittamista
+## 4. Kopioikaa projekti oman tiimin repositoryyn
+
+Kloonaamisen jälkeen projekti pitää kopioida oman tiimin GitHub-repositoryyn.
+Esimerkissä oman tiimin repository on:
+
+```text
+https://github.com/Savo-Consortium-of-Education/tiimi1.git
+```
+
+Opettaja tai tiimi luo tämän repositoryn ensin GitHubissa. Repositoryn nimenä voi olla
+esimerkiksi `tiimi1`, `tiimi2` tai opettajan antama muu nimi.
+
+Tarkistakaa ensin, missä repositoryssa olette:
+
+```bash
+git remote -v
+```
+
+Kloonauksen jälkeen `origin` osoittaa yleensä alkuperäiseen yhteiseen `tiimi`-repoon.
+Nimetkää alkuperäinen repository nimellä `upstream` ja lisätkää oman tiimin repository
+uudeksi `origin`-osoitteeksi:
+
+```bash
+git remote rename origin upstream
+git remote add origin https://github.com/Savo-Consortium-of-Education/tiimi1.git
+git remote -v
+```
+
+Tuloksena pitäisi olla:
+
+```text
+origin   https://github.com/Savo-Consortium-of-Education/tiimi1.git
+upstream https://github.com/Savo-Consortium-of-Education/tiimi.git
+```
+
+Lähettäkää projektin nykyinen `main`-haara oman tiimin repositoryyn:
+
+```bash
+git push -u origin main
+```
+
+Tämän jälkeen tarkistakaa GitHubissa, että projekti näkyy oman tiimin repositoryssa.
+Jatkossa käyttämänne `git push` lähettää muutokset oman tiimin repositoryyn.
+
+Jos opettaja julkaisee myöhemmin alkuperäiseen yhteiseen repositoryyn uusia muutoksia,
+voitte hakea ne näin:
+
+```bash
+git fetch upstream
+git switch main
+git merge upstream/main
+git push origin main
+```
+
+Älkää tehkö omia muutoksia suoraan `upstream`-repositoryyn. Tehkää työ aina oman tiimin
+repositoryssa ja sen brancheissa.
+
+## 5. Ennen uuden tehtävän aloittamista
 
 Päivittäkää paikallinen `main`-haara ennen uuden branchin luomista:
 
@@ -73,7 +130,7 @@ git pull origin main
 Valitkaa työ GitHubin avoimista issueista. Lukekaa issuen tehtävä ja hyväksymiskriteerit
 ennen kuin aloitatte koodaamisen.
 
-## 5. Branchin luominen
+## 6. Branchin luominen
 
 Luokaa uusi branch issuen numeron perusteella. Esimerkiksi issue #10:
 
@@ -101,7 +158,7 @@ git switch -c fix/issue-18-validation-errors
 git switch -c docs/issue-20-readme
 ```
 
-## 6. Muutosten tekeminen
+## 7. Muutosten tekeminen
 
 Toteuttakaa vain valittuun issueen kuuluva työ. Testatkaa sovellusta muutosten aikana.
 
@@ -120,7 +177,7 @@ git diff
 Älkää lisätkö salasanoja, API-avaimia, `node_modules`-kansiota tai tietokantatiedostoja
 committiin, ellei projektin ohjeissa erikseen sanota niin.
 
-## 7. Commitin tekeminen
+## 8. Commitin tekeminen
 
 Lisätkää halutut tiedostot staging-alueelle:
 
@@ -159,7 +216,7 @@ testi
 kaikki valmiiksi
 ```
 
-## 8. Branchin pushaminen GitHubiin
+## 9. Branchin pushaminen GitHubiin
 
 Kun työ on commitissa, pushatkaa branch GitHubiin:
 
@@ -173,7 +230,7 @@ Ensimmäinen push tarvitsee `-u`-option. Sen jälkeen riittää:
 git push
 ```
 
-## 9. Pull requestin avaaminen
+## 10. Pull requestin avaaminen
 
 Menkää GitHubissa repositoryyn ja avatkaa pushatusta branchista pull request.
 
@@ -201,7 +258,7 @@ Kun pull request yhdistetään, GitHub sulkee siihen linkitetyn issuen automaatt
 Repositoryssa on valmis PR-pohja tiedostossa
 `.github/PULL_REQUEST_TEMPLATE.md`. Täyttäkää kaikki kohdat huolellisesti.
 
-## 10. Toisen parin tekemä katselmointi
+## 11. Toisen parin tekemä katselmointi
 
 Toinen pari tarkistaa pull requestin ennen mergeä.
 
@@ -217,7 +274,7 @@ Tarkistakaa ainakin:
 Jos kaikki on kunnossa, valitkaa GitHubissa **Approve**.
 Jos muutettavaa löytyy, kirjoittakaa selkeä kommentti kyseiseen koodikohtaan.
 
-## 11. Pull requestin kommenttien korjaaminen
+## 12. Pull requestin kommenttien korjaaminen
 
 Pysykää omassa branchissa ja tehkää korjaukset siellä:
 
@@ -230,7 +287,7 @@ git push
 
 Uutta pull requestia ei tarvitse avata. Uusi push päivittyy samaan pull requestiin.
 
-## 12. Pull requestin mergeäminen
+## 13. Pull requestin mergeäminen
 
 Kun:
 
@@ -255,7 +312,7 @@ Valinnaisesti käyttämättömän paikallisen branchin voi poistaa:
 git branch -d feature/issue-10-add-destination-form
 ```
 
-## 13. Seuraavan issuen aloittaminen
+## 14. Seuraavan issuen aloittaminen
 
 Aloittakaa aina päivitetystä `main`-haarasta:
 
@@ -268,7 +325,7 @@ git switch -c feature/issue-11-destination-listing
 Älkää luoko uutta branchia vanhan työbranchin pohjalta, jos tehtävät eivät kuulu samaan
 pull requestiin.
 
-## 14. Jos Git ilmoittaa merge-konfliktista
+## 15. Jos Git ilmoittaa merge-konfliktista
 
 Merge-konflikti tarkoittaa, että kaksi henkilöä on muuttanut samaa koodikohtaa eri tavalla.
 
@@ -302,7 +359,7 @@ git push
 
 Jos ette tiedä, kumpi ratkaisu on oikea, älkää arvailko. Kysykää parilta tai opettajalta.
 
-## 15. Hyödylliset tarkistuskomennot
+## 16. Hyödylliset tarkistuskomennot
 
 Näytä nykyinen branch:
 
@@ -328,7 +385,7 @@ Näytä yhteys GitHub-repositoryyn:
 git remote -v
 ```
 
-## 16. Tyypillisiä ongelmia
+## 17. Tyypillisiä ongelmia
 
 ### `git push` hylätään
 
@@ -365,7 +422,7 @@ git branch --show-current
 Jos ette ole vielä commitoineet muutoksia, voitte vaihtaa oikeaan branchiin.
 Jos olette epävarmoja, pysähtykää ja kysykää apua. Älkää poistako muutoksia sokkona.
 
-## 17. Päivän lopun tarkistuslista
+## 18. Päivän lopun tarkistuslista
 
 - [ ] Työ liittyy olemassa olevaan issueen.
 - [ ] Työ on oikeassa branchissa.
@@ -378,7 +435,7 @@ Jos olette epävarmoja, pysähtykää ja kysykää apua. Älkää poistako muuto
 - [ ] Pull request on mergetty.
 - [ ] Paikallinen `main` on päivitetty.
 
-## 18. Koko esimerkki alusta loppuun
+## 19. Koko esimerkki alusta loppuun
 
 Esimerkissä toteutetaan issue #10:
 
