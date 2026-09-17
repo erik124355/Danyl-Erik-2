@@ -13,6 +13,40 @@ Rakentakaa parityönä web-sovellus, jolla käyttäjä voi:
 
 Tehtävän kesto on kaksi työpäivää. Tekoälyn käyttö on sallittua, mutta jokaisen opiskelijan tulee ymmärtää ja pystyä selittämään itse kirjoittamansa tai hyväksymänsä koodi.
 
+## Tehtävän kuvaus
+
+Rakennatte **Retkikohteet-sovelluksen**, jonka avulla käyttäjä voi suunnitella,
+tallentaa ja tarkastella retkikohteita yhdessä verkkosovelluksessa.
+
+Käyttäjä voi:
+
+- lisätä uuden retkikohteen
+- antaa kohteelle nimen, sijainnin, kuvauksen, koordinaatit, tyypin ja vaikeustason
+- merkitä suunnitellun retkipäivän
+- selata kaikkia tallennettuja retkikohteita
+- avata yhden retkikohteen tarkemmat tiedot
+- muokata retkikohteen tietoja
+- poistaa retkikohteen
+- hakea kohteelle sääennusteen Open-Meteo-rajapinnasta
+
+Sovellus koostuu käyttöliittymästä, PHP-backendistä ja MySQL-tietokannasta.
+Käyttöliittymä lähettää pyynnöt backendin API-reiteille, ja backend käsittelee
+tiedot sekä tallentaa ne tietokantaan. Sääennuste haetaan backendin kautta
+retkikohteen leveys- ja pituusasteiden perusteella.
+
+Käyttäjän näkökulmasta sovelluksen käyttötapaus on esimerkiksi seuraava:
+
+1. Käyttäjä avaa sovelluksen ja näkee tallennetut retkikohteet.
+2. Käyttäjä lisää uuden kohteen ja syöttää sen perustiedot.
+3. Sovellus tarkistaa syötteet ja tallentaa kohteen MySQL-tietokantaan.
+4. Käyttäjä avaa kohteen tarkemman näkymän.
+5. Käyttäjä pyytää kohteelle sääennusteen suunniteltua retkeä varten.
+6. Käyttäjä voi myöhemmin muokata kohteen tietoja tai poistaa kohteen.
+
+Tehtävän tavoitteena on harjoitella samalla web-sovelluksen rakentamista,
+API-rajapintoja, tietokannan käyttöä, Docker-kehitysympäristöä sekä tiimin
+työskentelyä GitHub-issueiden ja pull requestien avulla.
+
 ## Suositeltu teknologia
 
 Teknologia voidaan vaihtaa opettajan päätöksellä. Suositeltu toteutus on:
