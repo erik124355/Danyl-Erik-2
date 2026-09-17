@@ -6,7 +6,7 @@ Tämä kansio sisältää valmiit GitHub issue -tiedostot retkikohteet-projektil
 
 1. [01-project-setup.md](./01-project-setup.md) - Projektin perustaminen
 2. [02-project-structure.md](./02-project-structure.md) - Projektin kansiorakenne
-3. [03-sqlite-setup.md](./03-sqlite-setup.md) - SQLite-tietokannan käyttöönotto
+3. [03-sqlite-setup.md](./03-sqlite-setup.md) - MySQL-tietokannan käyttöönotto Dockerissa
 4. [04-destinations-table.md](./04-destinations-table.md) - Retkikohteiden tietokantataulu
 5. [05-create-destination.md](./05-create-destination.md) - Retkikohteen lisääminen tietokantaan
 6. [06-list-destinations.md](./06-list-destinations.md) - Retkikohteiden hakeminen

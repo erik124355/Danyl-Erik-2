@@ -16,27 +16,28 @@ Tämä tiedosto sisältää valmiit issue-tiketit, jotka voidaan käyttää suor
 
 ---
 
-## Issue 1: Projektin perustaminen
+## Issue 1: Projektin ja Docker-ympäristön perustaminen
 
 **Label:** `setup`
 
-Perustakaa Node.js-projekti ja lisätkää tarvittavat riippuvuudet.
+Perustakaa PHP-projekti ja Docker-ympäristö.
 
 **Tehtävät:**
 
-- Luo `package.json`.
-- Asenna Express.
-- Lisää käynnistysskripti.
+- Luo `Dockerfile`.
+- Luo `docker-compose.yml`.
+- Lisää PHP-palvelimen käynnistys ja tarvittavat PHP-laajennukset.
 - Luo sovelluksen käynnistystiedosto.
 - Lisää `.gitignore`.
-- Varmista, että palvelin käynnistyy.
+- Varmista, että PHP- ja MySQL-kontit käynnistyvät.
 
 **Hyväksymiskriteerit:**
 
-- `npm install` toimii.
-- Sovellus käynnistyy komennolla `npm start`.
+- `docker compose up -d --build` toimii.
+- Sovellus avautuu selaimessa Docker-ympäristön kautta.
+- MySQL-palvelu käynnistyy sovelluksen mukana.
 - Palvelin vastaa vähintään testireitillä `/`.
-- `node_modules` ei päädy GitHubiin.
+- Salaisuudet, lokit ja tietokannan väliaikaiset tiedostot eivät päädy GitHubiin.
 
 ---
 
@@ -69,18 +70,19 @@ public/
 
 ---
 
-## Issue 3: SQLite-tietokannan käyttöönotto
+## Issue 3: MySQL-tietokannan käyttöönotto Dockerissa
 
 **Label:** `database`
 
-Ottakaa SQLite käyttöön ja luokaa tietokannan alustaminen.
+Ottakaa MySQL käyttöön Docker Composella ja luokaa tietokannan alustaminen.
 
 **Hyväksymiskriteerit:**
 
-- Sovellus luo SQLite-tietokannan.
-- Tietokanta säilyy palvelimen uudelleenkäynnistyksen jälkeen.
-- Tietokannan sijainti on määritelty järkevästi.
+- MySQL-palvelu käynnistyy omassa kontissaan.
+- Tietokanta säilyy konttien uudelleenkäynnistyksen jälkeen Docker-volumen avulla.
+- Tietokannan yhteysasetukset ovat konfiguroitavissa.
 - Alustus voidaan suorittaa uudelleen ilman virhettä.
+- PHP-sovellus muodostaa yhteyden MySQL:ään PDO:lla.
 
 ---
 
@@ -418,7 +420,7 @@ README-tiedostossa tulee olla:
 
 **Iltapäivä**
 
-- SQLite-tietokannan perustaminen
+- MySQL-tietokannan ja Docker-ympäristön perustaminen
 - `destinations`-taulun luominen
 - Backendin API-reitit
 - Retkikohteen lisääminen
@@ -488,8 +490,8 @@ docs/issue-18-readme
 **Commitit:**
 
 ```text
-Add initial Express server
-Create destinations table
+Add PHP Docker environment
+Create MySQL destinations table
 Add weather API endpoint
 Validate destination form
 ```

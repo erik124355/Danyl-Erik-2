@@ -1,23 +1,24 @@
-# Issue 1: Projektin perustaminen
+# Issue 1: Projektin ja Docker-ympäristön perustaminen
 
 **Labelit:** `setup`
 
 ## Tehtävä
-Perustakaa Node.js-projekti ja lisätkää tarvittavat riippuvuudet.
+Perustakaa PHP-projekti ja Docker-ympäristö.
 
 ## Työtehtävät
-- Luo `package.json`.
-- Asenna Express.
-- Lisää käynnistysskripti.
+- Luo `Dockerfile`.
+- Luo `docker-compose.yml`.
+- Lisää PHP-palvelimen käynnistys ja tarvittavat PHP-laajennukset.
 - Luo sovelluksen käynnistystiedosto.
 - Lisää `.gitignore`.
-- Varmista, että palvelin käynnistyy.
+- Varmista, että PHP- ja MySQL-kontit käynnistyvät.
 
 ## Hyväksymiskriteerit
-- `npm install` toimii.
-- Sovellus käynnistyy komennolla `npm start`.
+- `docker compose up -d --build` toimii.
+- Sovellus avautuu selaimessa Docker-ympäristön kautta.
+- MySQL-palvelu käynnistyy sovelluksen mukana.
 - Palvelin vastaa vähintään testireitillä `/`.
-- `node_modules` ei päädy GitHubiin.
+- Salaisuudet, lokit ja tietokannan väliaikaiset tiedostot eivät päädy GitHubiin.
 
 ## Lisätiedot
 Tämä on projektin perusta, joka mahdollistaa seuraavien issueiden toteutuksen.

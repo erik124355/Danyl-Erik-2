@@ -1,15 +1,16 @@
-# Issue 3: SQLite-tietokannan käyttöönotto
+# Issue 3: MySQL-tietokannan käyttöönotto Dockerissa
 
 **Labelit:** `database`
 
 ## Tehtävä
-Ottakaa SQLite käyttöön ja luokaa tietokannan alustaminen.
+Ottakaa MySQL käyttöön Docker Composella ja luokaa tietokannan alustaminen.
 
 ## Hyväksymiskriteerit
-- Sovellus luo SQLite-tietokannan.
-- Tietokanta säilyy palvelimen uudelleenkäynnistyksen jälkeen.
-- Tietokannan sijainti on määritelty järkevästi.
+- MySQL-palvelu käynnistyy omassa kontissaan.
+- Tietokanta säilyy konttien uudelleenkäynnistyksen jälkeen Docker-volumen avulla.
+- Tietokannan yhteysasetukset ovat konfiguroitavissa.
 - Alustus voidaan suorittaa uudelleen ilman virhettä.
+- PHP-sovellus muodostaa yhteyden MySQL:ään PDO:lla.
 
 ## Lisätiedot
 Tämä issue luo perustan tietokantaan tallennettaville retkikohteille.

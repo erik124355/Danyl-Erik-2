@@ -7,20 +7,23 @@ Suunnitelkaa ja toteuttakaa selkeä kansiorakenne.
 
 ## Esimerkkirakenne
 ```text
-src/
-  server.js
-  routes/
-  controllers/
-  db/
-  services/
-public/
-  index.html
-  css/
-  js/
+app/
+  public/
+    index.php
+    css/
+    js/
+  src/
+    controllers/
+    services/
+    database/
+docker/
+  php/
+    Dockerfile
+docker-compose.yml
 ```
 
 ## Hyväksymiskriteerit
-- Backend- ja frontend-koodi ovat selkeästi eroteltuina.
+- PHP-backend, frontend ja Docker-konfiguraatiot ovat selkeästi eroteltuina.
 - Kansiorakenne on dokumentoitu README-tiedostossa.
 - Rakenteen tarkoitus on ymmärrettävä toiselle kehittäjälle.
 

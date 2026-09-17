@@ -17,10 +17,11 @@ Tehtävän kesto on kaksi työpäivää. Tekoälyn käyttö on sallittua, mutta 
 
 Teknologia voidaan vaihtaa opettajan päätöksellä. Suositeltu toteutus on:
 
-- Backend: Node.js ja Express
+- Backend: PHP
 - Frontend: HTML, CSS ja JavaScript
-- Tietokanta: SQLite
-- Tietokantakirjasto: better-sqlite3 tai sqlite3
+- Tietokanta: MySQL
+- Tietokantayhteys: PHP PDO
+- Kehitysympäristö: Docker ja Docker Compose
 - Ulkoinen API: Open-Meteo Weather API
 - Versionhallinta: Git ja GitHub
 
@@ -46,7 +47,7 @@ Sovelluksessa täytyy olla:
 3. Yksittäisen retkikohteen tarkasteleminen
 4. Retkikohteen muokkaaminen
 5. Retkikohteen poistaminen
-6. SQLite-tietokanta
+6. MySQL-tietokanta
 7. Backendin ja frontendin välinen API
 8. Ulkoisen sää-API:n käyttö
 9. Lomakkeiden validointi
@@ -84,8 +85,8 @@ docs/issue-18-readme
 Esimerkkejä hyvistä commit-viesteistä:
 
 ```text
-Add initial Express server
-Create destinations table
+Add PHP Docker environment
+Create MySQL destinations table
 Add weather API endpoint
 Validate destination form
 ```
@@ -96,27 +97,28 @@ Alla olevat tehtävät voi luoda tämän repositoryn GitHub-issueiksi. Issueiden
 
 ---
 
-### Issue 1: Projektin perustaminen
+### Issue 1: Projektin ja Docker-ympäristön perustaminen
 
 **Label:** `setup`
 
-Perustakaa Node.js-projekti ja lisätkää tarvittavat riippuvuudet.
+Perustakaa PHP-projekti ja Docker-ympäristö.
 
 **Tehtävät:**
 
-- Luo `package.json`.
-- Asenna Express.
-- Lisää käynnistysskripti.
+- Luo `Dockerfile`.
+- Luo `docker-compose.yml`.
+- Lisää PHP-palvelimen käynnistys ja tarvittavat PHP-laajennukset.
 - Luo sovelluksen käynnistystiedosto.
 - Lisää `.gitignore`.
-- Varmista, että palvelin käynnistyy.
+- Varmista, että PHP- ja MySQL-kontit käynnistyvät.
 
 **Hyväksymiskriteerit:**
 
-- `npm install` toimii.
-- Sovellus käynnistyy komennolla `npm start`.
+- `docker compose up -d --build` toimii.
+- Sovellus avautuu selaimessa Docker-ympäristön kautta.
+- MySQL-palvelu käynnistyy sovelluksen mukana.
 - Palvelin vastaa vähintään testireitillä `/`.
-- `node_modules` ei päädy GitHubiin.
+- Salaisuudet, lokit ja tietokannan väliaikaiset tiedostot eivät päädy GitHubiin.
 
 ---
 
@@ -149,18 +151,19 @@ public/
 
 ---
 
-### Issue 3: SQLite-tietokannan käyttöönotto
+### Issue 3: MySQL-tietokannan käyttöönotto Dockerissa
 
 **Label:** `database`
 
-Ottakaa SQLite käyttöön ja luokaa tietokannan alustaminen.
+Ottakaa MySQL käyttöön Docker Composella ja luokaa tietokannan alustaminen.
 
 **Hyväksymiskriteerit:**
 
-- Sovellus luo SQLite-tietokannan.
-- Tietokanta säilyy palvelimen uudelleenkäynnistyksen jälkeen.
-- Tietokannan sijainti on määritelty järkevästi.
+- MySQL-palvelu käynnistyy omassa kontissaan.
+- Tietokanta säilyy konttien uudelleenkäynnistyksen jälkeen volumen avulla.
+- Tietokannan käyttäjätunnus, salasana ja tietokannan nimi ovat konfiguroitavissa.
 - Alustus voidaan suorittaa uudelleen ilman virhettä.
+- PHP-sovellus muodostaa yhteyden MySQL:ään PDO:lla.
 
 ---
 
@@ -496,7 +499,7 @@ README-tiedostossa tulee olla:
 
 **Iltapäivä**
 
-- SQLite-tietokannan perustaminen
+- MySQL-tietokannan ja Docker-ympäristön perustaminen
 - `destinations`-taulun luominen
 - Backendin API-reitit
 - Retkikohteen lisääminen
@@ -543,7 +546,7 @@ README-tiedostoon lisätään esimerkiksi:
 
 Käytimme tekoälyä seuraavissa asioissa:
 
-- SQLite-taulun rakenteen suunnittelu
+- MySQL-taulun rakenteen suunnittelu
 - Open-Meteo API -kutsun hahmottelu
 - Virheenkäsittelyn ideointi
 - Testitapausten suunnittelu
@@ -579,7 +582,7 @@ Pull requestin kuvauksessa voidaan käyttää esimerkiksi:
 ## Mitä tehtiin?
 
 - Lisättiin retkikohteiden hakemiseen API-reitti
-- Haetaan tiedot SQLite-tietokannasta
+- Haetaan tiedot MySQL-tietokannasta
 - Palautetaan tulokset JSON-muodossa
 
 ## Testaus

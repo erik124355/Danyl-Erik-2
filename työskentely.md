@@ -34,7 +34,8 @@ Hyvä nyrkkisääntö:
 Tarvitsette:
 
 - Gitin
-- Node.js:n ja NPM:n
+- Dockerin ja Docker Composen
+- PHP:n (tarvittaessa editorin syntaksitukea varten)
 - koodieditorin, esimerkiksi Visual Studio Coden
 - GitHub-tunnuksen
 
@@ -42,8 +43,9 @@ Tarkistakaa asennukset:
 
 ```bash
 git --version
-node --version
-npm --version
+docker --version
+docker compose version
+php --version
 ```
 
 Jos jokin komento ei toimi, pyytäkää opettajalta apua ennen työskentelyn jatkamista.
@@ -55,11 +57,31 @@ Valitkaa tietokoneelta kansio, johon projekti tallennetaan. Suorittakaa komennot
 ```bash
 git clone https://github.com/Savo-Consortium-of-Education/tiimi.git
 cd tiimi
-npm install
 ```
 
 `git clone` lataa projektin omalle tietokoneelle. `cd tiimi` siirtyy projektikansioon.
-`npm install` asentaa projektin riippuvuudet.
+Projektin PHP- ja MySQL-palvelut käynnistetään Dockerilla.
+
+Käynnistäkää harjoitusympäristö:
+
+```bash
+docker compose up -d --build
+```
+
+Katsokaa käynnissä olevat kontit:
+
+```bash
+docker compose ps
+```
+
+Lopettakaa ympäristö työskentelyn jälkeen:
+
+```bash
+docker compose down
+```
+
+Älkää käyttäkö `docker compose down -v` -komentoa ilman opettajan lupaa, koska se
+poistaa myös MySQL-tietokannan volumet.
 
 ## 4. Kopioikaa projekti oman tiimin repositoryyn
 
@@ -153,7 +175,7 @@ Käytä seuraavia alkuja:
 Esimerkkejä:
 
 ```bash
-git switch -c feature/issue-03-sqlite-setup
+git switch -c feature/issue-03-mysql-docker-setup
 git switch -c fix/issue-18-validation-errors
 git switch -c docs/issue-20-readme
 ```
@@ -174,7 +196,7 @@ Tarkistakaa, mitä koodissa muuttui:
 git diff
 ```
 
-Älkää lisätkö salasanoja, API-avaimia, `node_modules`-kansiota tai tietokantatiedostoja
+Älkää lisätkö salasanoja, API-avaimia, Dockerin lokitiedostoja tai tietokantatiedostoja
 committiin, ellei projektin ohjeissa erikseen sanota niin.
 
 ## 8. Commitin tekeminen
