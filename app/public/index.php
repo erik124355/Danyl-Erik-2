@@ -53,12 +53,14 @@ if ($path === '/api/spots' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-if ($path === '/api/spots' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+if (($path === '/api/destinations' || $path === '/api/spots') && $_SERVER['REQUEST_METHOD'] === 'GET') {
     header('Content-Type: application/json; charset=utf-8');
 
     try {
         $pdo = Database::getConnection();
-        $stmt = $pdo->query('SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC');
+
+        $sql = 'SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC';
+        $stmt = $pdo->query($sql);
         $spots = $stmt->fetchAll();
 
         http_response_code(200);
