@@ -8,27 +8,51 @@ use App\Database;
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-if ($path === '/api/spots' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+function jsonError(int $code, string $message, ?string $details = null): void
+{
+    http_response_code($code);
+    $payload = [
+        'status' => 'error',
+        'message' => $message,
+    ];
+
+    if ($details !== null) {
+        $payload['details'] = $details;
+    }
+
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+function readJsonBody(): array
+{
+    $raw = file_get_contents('php://input');
+    $data = json_decode((string) $raw, true);
+
+    return is_array($data) ? $data : [];
+}
+
+if (
+    ($path === '/api/spots' || $path === '/api/destinations')
+    && $_SERVER['REQUEST_METHOD'] === 'POST'
+) {
     header('Content-Type: application/json; charset=utf-8');
 
-    $input = json_decode((string) file_get_contents('php://input'), true);
+    $input = readJsonBody();
 
     $name = trim((string) ($input['name'] ?? ''));
     $location = trim((string) ($input['location'] ?? ''));
     $description = trim((string) ($input['description'] ?? ''));
 
     if ($name === '' || $location === '') {
-        http_response_code(400);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Name and location are required',
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        jsonError(400, 'Name and location are required');
     }
 
     try {
         $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('INSERT INTO hiking_spots (name, location, description) VALUES (?, ?, ?)');
+        $stmt = $pdo->prepare(
+            'INSERT INTO hiking_spots (name, location, description) VALUES (?, ?, ?)'
+        );
         $stmt->execute([$name, $location, $description]);
 
         http_response_code(201);
@@ -43,24 +67,21 @@ if ($path === '/api/spots' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         ], JSON_UNESCAPED_UNICODE);
         exit;
     } catch (Throwable $e) {
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Failed to insert hiking spot',
-            'details' => $e->getMessage(),
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        jsonError(500, 'Failed to insert hiking spot', $e->getMessage());
     }
 }
 
-if (($path === '/api/destinations' || $path === '/api/spots') && $_SERVER['REQUEST_METHOD'] === 'GET') {
+if (
+    ($path === '/api/spots' || $path === '/api/destinations')
+    && $_SERVER['REQUEST_METHOD'] === 'GET'
+) {
     header('Content-Type: application/json; charset=utf-8');
 
     try {
         $pdo = Database::getConnection();
-
-        $sql = 'SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC';
-        $stmt = $pdo->query($sql);
+        $stmt = $pdo->query(
+            'SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC'
+        );
         $spots = $stmt->fetchAll();
 
         http_response_code(200);
@@ -70,28 +91,88 @@ if (($path === '/api/destinations' || $path === '/api/spots') && $_SERVER['REQUE
         ], JSON_UNESCAPED_UNICODE);
         exit;
     } catch (Throwable $e) {
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Database query failed',
-            'details' => $e->getMessage(),
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        jsonError(500, 'Database query failed', $e->getMessage());
     }
 }
 
-if (preg_match('#^/api/spots/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+if (
+    preg_match('#^/api/(destinations|spots)/(\d+)$#', $path, $matches)
+    && $_SERVER['REQUEST_METHOD'] === 'GET'
+) {
     header('Content-Type: application/json; charset=utf-8');
 
-    $id = (int) $matches[1];
+    $id = (int) $matches[2];
 
-    if ($id <= 0) {
-        http_response_code(400);
+    try {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare(
+            'SELECT id, name, location, description FROM hiking_spots WHERE id = ?'
+        );
+        $stmt->execute([$id]);
+
+        $spot = $stmt->fetch();
+
+        if (!$spot) {
+            jsonError(404, 'Hiking spot not found');
+        }
+
+        http_response_code(200);
         echo json_encode([
-            'status' => 'error',
-            'message' => 'Invalid hiking spot id',
+            'status' => 'ok',
+            'data' => $spot,
         ], JSON_UNESCAPED_UNICODE);
         exit;
+    } catch (Throwable $e) {
+        jsonError(500, 'Database query failed', $e->getMessage());
+    }
+}
+
+if (
+    preg_match('#^/api/(destinations|spots)/(\d+)$#', $path, $matches)
+    && $_SERVER['REQUEST_METHOD'] === 'PUT'
+) {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $id = (int) $matches[2];
+    $input = readJsonBody();
+
+    $name = trim((string) ($input['name'] ?? ''));
+    $location = trim((string) ($input['location'] ?? ''));
+    $description = trim((string) ($input['description'] ?? ''));
+
+    if ($name === '' || $location === '') {
+        jsonError(400, 'Name and location are required');
+    }
+
+    try {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare(
+            'UPDATE hiking_spots SET name = ?, location = ?, description = ? WHERE id = ?'
+        );
+        $stmt->execute([$name, $location, $description, $id]);
+
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'ok',
+            'message' => 'Hiking spot updated',
+            'id' => $id,
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    } catch (Throwable $e) {
+        jsonError(500, 'Failed to update hiking spot', $e->getMessage());
+    }
+}
+
+if (
+    preg_match('#^/api/(destinations|spots)/(\d+)$#', $path, $matches)
+    && $_SERVER['REQUEST_METHOD'] === 'DELETE'
+) {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $id = (int) $matches[2];
+
+    if ($id <= 0) {
+        jsonError(400, 'Invalid hiking spot id');
     }
 
     try {
@@ -107,93 +188,7 @@ if (preg_match('#^/api/spots/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_MET
         ], JSON_UNESCAPED_UNICODE);
         exit;
     } catch (Throwable $e) {
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Failed to delete hiking spot',
-            'details' => $e->getMessage(),
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-}
-
-if (preg_match('#^/api/spots/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_METHOD'] === 'PUT') {
-    header('Content-Type: application/json; charset=utf-8');
-
-    $id = (int) $matches[1];
-    $input = json_decode((string) file_get_contents('php://input'), true);
-
-    $name = trim((string) ($input['name'] ?? ''));
-    $location = trim((string) ($input['location'] ?? ''));
-    $description = trim((string) ($input['description'] ?? ''));
-
-    if ($name === '' || $location === '') {
-        http_response_code(400);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Name and location are required',
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    try {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('UPDATE hiking_spots SET name = ?, location = ?, description = ? WHERE id = ?');
-        $stmt->execute([$name, $location, $description, $id]);
-
-        http_response_code(200);
-        echo json_encode([
-            'status' => 'ok',
-            'message' => 'Hiking spot updated',
-            'id' => $id,
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    } catch (Throwable $e) {
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Failed to update hiking spot',
-            'details' => $e->getMessage(),
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-}
-
-if (preg_match('#^/api/destinations/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    header('Content-Type: application/json; charset=utf-8');
-
-    $id = (int) $matches[1];
-
-    try {
-        $pdo = Database::getConnection();
-        $stmt = $pdo->prepare('SELECT id, name, location, description FROM hiking_spots WHERE id = ?');
-        $stmt->execute([$id]);
-
-        $spot = $stmt->fetch();
-
-        if (!$spot) {
-            http_response_code(404);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Hiking spot not found',
-            ], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
-        http_response_code(200);
-        echo json_encode([
-            'status' => 'ok',
-            'data' => $spot,
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    } catch (Throwable $e) {
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Database query failed',
-            'details' => $e->getMessage(),
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
+        jsonError(500, 'Failed to delete hiking spot', $e->getMessage());
     }
 }
 
@@ -202,7 +197,9 @@ if ($path === '/') {
 
     try {
         $pdo = Database::getConnection();
-        $stmt = $pdo->query('SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC');
+        $stmt = $pdo->query(
+            'SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC'
+        );
         $spots = $stmt->fetchAll();
     } catch (Throwable $e) {
         $spots = [];
