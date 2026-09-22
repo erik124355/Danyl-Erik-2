@@ -159,6 +159,44 @@ if (preg_match('#^/api/spots/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_MET
     }
 }
 
+if (preg_match('#^/api/destinations/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $id = (int) $matches[1];
+
+    try {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('SELECT id, name, location, description FROM hiking_spots WHERE id = ?');
+        $stmt->execute([$id]);
+
+        $spot = $stmt->fetch();
+
+        if (!$spot) {
+            http_response_code(404);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Hiking spot not found',
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'ok',
+            'data' => $spot,
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    } catch (Throwable $e) {
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Database query failed',
+            'details' => $e->getMessage(),
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
 if ($path === '/') {
     header('Content-Type: text/html; charset=utf-8');
 
