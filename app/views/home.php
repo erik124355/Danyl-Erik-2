@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fi">
 <head>
@@ -24,7 +23,7 @@
     </div>
 
     <script>
-        const spotsData = <?php echo json_encode($spots, JSON_UNESCAPED_UNICODE); ?>;
+        const initialSpots = <?php echo json_encode($spots, JSON_UNESCAPED_UNICODE); ?>;
     </script>
     <script src="/assets/app.js"></script>
 </body>

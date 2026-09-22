@@ -65,3 +65,9 @@ button {
     margin-top: 15px;
     min-height: 24px;
 }
+
+.delete-btn {
+    margin-top: 16px;
+    background: #dc2626;
+    width: 100%;
+}

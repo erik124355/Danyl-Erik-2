@@ -16,8 +16,37 @@ async function loadSpots() {
                 <h2>${spot.name}</h2>
                 <p><strong>Sijainti:</strong> ${spot.location}</p>
                 <p>${spot.description || 'Ei kuvausta.'}</p>
+                <button class="delete-btn" data-id="${spot.id}">Poista</button>
             </div>
         `).join('');
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const id = button.getAttribute('data-id');
+
+                try {
+                    const response = await fetch(`/api/spots/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Poisto epäonnistui');
+                    }
+
+                    const message = document.getElementById('message');
+                    message.textContent = 'Retkikohde poistettu.';
+                    message.style.color = '#4ade80';
+
+                    await loadSpots();
+                } catch (error) {
+                    const message = document.getElementById('message');
+                    message.textContent = error.message;
+                    message.style.color = '#fca5a5';
+                }
+            });
+        });
     } catch (error) {
         container.innerHTML = `<div class="card"><p>${error.message}</p></div>`;
     }
@@ -50,7 +79,6 @@ document.getElementById('spotForm').addEventListener('submit', async (event) => 
 
         message.textContent = 'Retkikohde lisätty onnistuneesti.';
         message.style.color = '#4ade80';
-
         document.getElementById('spotForm').reset();
         await loadSpots();
     } catch (error) {
@@ -59,16 +87,45 @@ document.getElementById('spotForm').addEventListener('submit', async (event) => 
     }
 });
 
-if (typeof spotsData !== 'undefined') {
+if (typeof initialSpots !== 'undefined') {
     const container = document.getElementById('spots');
 
-    container.innerHTML = spotsData.map(spot => `
+    container.innerHTML = initialSpots.map(spot => `
         <div class="card">
             <h2>${spot.name}</h2>
             <p><strong>Sijainti:</strong> ${spot.location}</p>
             <p>${spot.description || 'Ei kuvausta.'}</p>
+            <button class="delete-btn" data-id="${spot.id}">Poista</button>
         </div>
     `).join('');
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const id = button.getAttribute('data-id');
+
+            try {
+                const response = await fetch(`/api/spots/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Poisto epäonnistui');
+                }
+
+                const message = document.getElementById('message');
+                message.textContent = 'Retkikohde poistettu.';
+                message.style.color = '#4ade80';
+
+                await loadSpots();
+            } catch (error) {
+                const message = document.getElementById('message');
+                message.textContent = error.message;
+                message.style.color = '#fca5a5';
+            }
+        });
+    });
 } else {
     loadSpots();
 }

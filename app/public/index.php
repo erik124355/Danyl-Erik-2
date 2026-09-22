@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 require_once __DIR__ . '/../src/Database.php';
@@ -73,6 +72,43 @@ if ($path === '/api/spots' && $_SERVER['REQUEST_METHOD'] === 'GET') {
         echo json_encode([
             'status' => 'error',
             'message' => 'Database query failed',
+            'details' => $e->getMessage(),
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+}
+
+if (preg_match('#^/api/spots/(\d+)$#', $path, $matches) && $_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $id = (int) $matches[1];
+
+    if ($id <= 0) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Invalid hiking spot id',
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    try {
+        $pdo = Database::getConnection();
+        $stmt = $pdo->prepare('DELETE FROM hiking_spots WHERE id = ?');
+        $stmt->execute([$id]);
+
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'ok',
+            'message' => 'Hiking spot deleted',
+            'id' => $id,
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    } catch (Throwable $e) {
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to delete hiking spot',
             'details' => $e->getMessage(),
         ], JSON_UNESCAPED_UNICODE);
         exit;
