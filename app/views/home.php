@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fi">
 <head>
@@ -11,10 +12,11 @@
         <h1>Retkikohteet</h1>
 
         <form id="spotForm">
+            <input type="hidden" id="spotId">
             <input type="text" id="name" placeholder="Nimi" required>
             <input type="text" id="location" placeholder="Sijainti" required>
             <textarea id="description" placeholder="Kuvaus"></textarea>
-            <button type="submit">Lisää retkikohde</button>
+            <button id="submitButton" type="submit">Lisää retkikohde</button>
         </form>
 
         <div id="message" class="message"></div>
@@ -23,7 +25,7 @@
     </div>
 
     <script>
-        const initialSpots = <?php echo json_encode($spots, JSON_UNESCAPED_UNICODE); ?>;
+        window.initialSpots = <?php echo json_encode($spots, JSON_UNESCAPED_UNICODE); ?>;
     </script>
     <script src="/assets/app.js"></script>
 </body>

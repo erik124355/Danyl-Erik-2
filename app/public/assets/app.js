@@ -16,9 +16,28 @@ async function loadSpots() {
                 <h2>${spot.name}</h2>
                 <p><strong>Sijainti:</strong> ${spot.location}</p>
                 <p>${spot.description || 'Ei kuvausta.'}</p>
+
+                <button class="edit-btn" data-id="${spot.id}">Muokkaa</button>
                 <button class="delete-btn" data-id="${spot.id}">Poista</button>
             </div>
         `).join('');
+
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.getAttribute('data-id');
+                const spot = window.initialSpots?.find(item => String(item.id) === String(id));
+
+                if (!spot) return;
+
+                document.getElementById('spotId').value = spot.id;
+                document.getElementById('name').value = spot.name;
+                document.getElementById('location').value = spot.location;
+                document.getElementById('description').value = spot.description || '';
+
+                const submitButton = document.getElementById('submitButton');
+                submitButton.textContent = 'Päivitä retkikohde';
+            });
+        });
 
         document.querySelectorAll('.delete-btn').forEach(button => {
             button.addEventListener('click', async () => {
@@ -39,6 +58,7 @@ async function loadSpots() {
                     message.textContent = 'Retkikohde poistettu.';
                     message.style.color = '#4ade80';
 
+                    window.initialSpots = window.initialSpots.filter(item => String(item.id) !== String(id));
                     await loadSpots();
                 } catch (error) {
                     const message = document.getElementById('message');
@@ -52,52 +72,95 @@ async function loadSpots() {
     }
 }
 
-document.getElementById('spotForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
+const form = document.getElementById('spotForm');
 
-    const message = document.getElementById('message');
-    const payload = {
-        name: document.getElementById('name').value,
-        location: document.getElementById('location').value,
-        description: document.getElementById('description').value
-    };
+if (form) {
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    try {
-        const response = await fetch('/api/spots', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify(payload)
-        });
+        const message = document.getElementById('message');
+        const spotId = document.getElementById('spotId').value;
+        const payload = {
+            name: document.getElementById('name').value,
+            location: document.getElementById('location').value,
+            description: document.getElementById('description').value
+        };
 
-        const result = await response.json();
+        try {
+            let response;
 
-        if (!response.ok) {
-            throw new Error(result.message || 'Lisäys epäonnistui');
+            if (spotId) {
+                response = await fetch(`/api/spots/${spotId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                response = await fetch('/api/spots', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Toiminto epäonnistui');
+            }
+
+            message.textContent = spotId
+                ? 'Retkikohde päivitetty.'
+                : 'Retkikohde lisätty onnistuneesti.';
+            message.style.color = '#4ade80';
+
+            form.reset();
+            document.getElementById('spotId').value = '';
+            document.getElementById('submitButton').textContent = 'Lisää retkikohde';
+
+            window.initialSpots = await fetch('/api/spots').then(r => r.json()).then(r => r.data || []);
+            await loadSpots();
+        } catch (error) {
+            message.textContent = error.message;
+            message.style.color = '#fca5a5';
         }
+    });
+}
 
-        message.textContent = 'Retkikohde lisätty onnistuneesti.';
-        message.style.color = '#4ade80';
-        document.getElementById('spotForm').reset();
-        await loadSpots();
-    } catch (error) {
-        message.textContent = error.message;
-        message.style.color = '#fca5a5';
-    }
-});
-
-if (typeof initialSpots !== 'undefined') {
+if (typeof window.initialSpots !== 'undefined') {
     const container = document.getElementById('spots');
 
-    container.innerHTML = initialSpots.map(spot => `
+    container.innerHTML = window.initialSpots.map(spot => `
         <div class="card">
             <h2>${spot.name}</h2>
             <p><strong>Sijainti:</strong> ${spot.location}</p>
             <p>${spot.description || 'Ei kuvausta.'}</p>
+
+            <button class="edit-btn" data-id="${spot.id}">Muokkaa</button>
             <button class="delete-btn" data-id="${spot.id}">Poista</button>
         </div>
     `).join('');
+
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id');
+            const spot = window.initialSpots.find(item => String(item.id) === String(id));
+
+            if (!spot) return;
+
+            document.getElementById('spotId').value = spot.id;
+            document.getElementById('name').value = spot.name;
+            document.getElementById('location').value = spot.location;
+            document.getElementById('description').value = spot.description || '';
+
+            const submitButton = document.getElementById('submitButton');
+            submitButton.textContent = 'Päivitä retkikohde';
+        });
+    });
 
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', async () => {
@@ -118,6 +181,7 @@ if (typeof initialSpots !== 'undefined') {
                 message.textContent = 'Retkikohde poistettu.';
                 message.style.color = '#4ade80';
 
+                window.initialSpots = window.initialSpots.filter(item => String(item.id) !== String(id));
                 await loadSpots();
             } catch (error) {
                 const message = document.getElementById('message');
