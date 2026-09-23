@@ -43,27 +43,66 @@ if (
     $name = trim((string) ($input['name'] ?? ''));
     $location = trim((string) ($input['location'] ?? ''));
     $description = trim((string) ($input['description'] ?? ''));
+    $latitude = $input['latitude'] ?? null;
+    $longitude = $input['longitude'] ?? null;
+    $type = trim((string) ($input['type'] ?? ''));
+    $difficulty = trim((string) ($input['difficulty'] ?? ''));
+    $plannedDate = trim((string) ($input['planned_date'] ?? ''));
 
-    if ($name === '' || $location === '') {
-        jsonError(400, 'Name and location are required');
+    if (
+        $name === '' ||
+        $location === '' ||
+        $description === '' ||
+        $type === '' ||
+        $difficulty === '' ||
+        $plannedDate === '' ||
+        !is_numeric($latitude) ||
+        !is_numeric($longitude)
+    ) {
+        jsonError(400, 'All fields are required');
+    }
+
+    $latitude = (float) $latitude;
+    $longitude = (float) $longitude;
+
+    if ($latitude < -90 || $latitude > 90) {
+        jsonError(400, 'Latitude must be between -90 and 90');
+    }
+
+    if ($longitude < -180 || $longitude > 180) {
+        jsonError(400, 'Longitude must be between -180 and 180');
+    }
+
+    $date = DateTime::createFromFormat('Y-m-d', $plannedDate);
+
+    if (!$date || $date->format('Y-m-d') !== $plannedDate) {
+        jsonError(400, 'Invalid planned date');
     }
 
     try {
         $pdo = Database::getConnection();
+
         $stmt = $pdo->prepare(
-            'INSERT INTO hiking_spots (name, location, description) VALUES (?, ?, ?)'
+            'INSERT INTO hiking_spots
+            (name, location, description, latitude, longitude, type, difficulty, planned_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         );
-        $stmt->execute([$name, $location, $description]);
+
+        $stmt->execute([
+            $name,
+            $location,
+            $description,
+            $latitude,
+            $longitude,
+            $type,
+            $difficulty,
+            $plannedDate,
+        ]);
 
         http_response_code(201);
         echo json_encode([
             'status' => 'ok',
             'message' => 'Hiking spot created',
-            'data' => [
-                'name' => $name,
-                'location' => $location,
-                'description' => $description,
-            ],
         ], JSON_UNESCAPED_UNICODE);
         exit;
     } catch (Throwable $e) {
@@ -80,7 +119,7 @@ if (
     try {
         $pdo = Database::getConnection();
         $stmt = $pdo->query(
-            'SELECT id, name, location, description FROM hiking_spots ORDER BY id ASC'
+            'SELECT id, name, location, description, latitude, longitude, type, difficulty, planned_date FROM hiking_spots ORDER BY id ASC'
         );
         $spots = $stmt->fetchAll();
 
@@ -139,17 +178,48 @@ if (
     $name = trim((string) ($input['name'] ?? ''));
     $location = trim((string) ($input['location'] ?? ''));
     $description = trim((string) ($input['description'] ?? ''));
+    $latitude = $input['latitude'] ?? null;
+    $longitude = $input['longitude'] ?? null;
+    $type = trim((string) ($input['type'] ?? ''));
+    $difficulty = trim((string) ($input['difficulty'] ?? ''));
+    $plannedDate = trim((string) ($input['planned_date'] ?? ''));
 
-    if ($name === '' || $location === '') {
-        jsonError(400, 'Name and location are required');
+    if (
+        $name === '' ||
+        $location === '' ||
+        $description === '' ||
+        $type === '' ||
+        $difficulty === '' ||
+        $plannedDate === '' ||
+        !is_numeric($latitude) ||
+        !is_numeric($longitude)
+    ) {
+        jsonError(400, 'All fields are required');
+    }
+
+    $latitude = (float) $latitude;
+    $longitude = (float) $longitude;
+
+    if ($latitude < -90 || $latitude > 90) {
+        jsonError(400, 'Latitude must be between -90 and 90');
+    }
+
+    if ($longitude < -180 || $longitude > 180) {
+        jsonError(400, 'Longitude must be between -180 and 180');
+    }
+
+    $date = DateTime::createFromFormat('Y-m-d', $plannedDate);
+
+    if (!$date || $date->format('Y-m-d') !== $plannedDate) {
+        jsonError(400, 'Invalid planned date');
     }
 
     try {
         $pdo = Database::getConnection();
         $stmt = $pdo->prepare(
-            'UPDATE hiking_spots SET name = ?, location = ?, description = ? WHERE id = ?'
+            'UPDATE hiking_spots SET name = ?, location = ?, description = ?, latitude = ?, longitude = ?, type = ?, difficulty = ?, planned_date = ? WHERE id = ?'
         );
-        $stmt->execute([$name, $location, $description, $id]);
+        $stmt->execute([$name, $location, $description, $latitude, $longitude, $type, $difficulty, $plannedDate, $id]);
 
         http_response_code(200);
         echo json_encode([

@@ -15,7 +15,12 @@ async function loadSpots() {
             <div class="card">
                 <h2>${spot.name}</h2>
                 <p><strong>Sijainti:</strong> ${spot.location}</p>
-                <p>${spot.description || 'Ei kuvausta.'}</p>
+                <p><strong>Kuvaus:</strong> ${spot.description || 'Ei kuvausta.'}</p>
+                <p><strong>Leveysaste:</strong> ${spot.latitude}</p>
+                <p><strong>Pituusaste:</strong> ${spot.longitude}</p>
+                <p><strong>Tyyppi:</strong> ${spot.type}</p>
+                <p><strong>Vaikeustaso:</strong> ${spot.difficulty}</p>
+                <p><strong>Suunniteltu retkipäivä:</strong> ${spot.planned_date}</p>
 
                 <button class="edit-btn" data-id="${spot.id}">Muokkaa</button>
                 <button class="delete-btn" data-id="${spot.id}">Poista</button>
@@ -81,9 +86,14 @@ if (form) {
         const message = document.getElementById('message');
         const spotId = document.getElementById('spotId').value;
         const payload = {
-            name: document.getElementById('name').value,
-            location: document.getElementById('location').value,
-            description: document.getElementById('description').value
+            name: document.getElementById('name').value.trim(),
+            location: document.getElementById('location').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            latitude: document.getElementById('latitude').value,
+            longitude: document.getElementById('longitude').value,
+            type: document.getElementById('type').value.trim(),
+            difficulty: document.getElementById('difficulty').value.trim(),
+            planned_date: document.getElementById('planned_date').value
         };
 
         try {
@@ -138,7 +148,12 @@ if (typeof window.initialSpots !== 'undefined') {
         <div class="card">
             <h2>${spot.name}</h2>
             <p><strong>Sijainti:</strong> ${spot.location}</p>
-            <p>${spot.description || 'Ei kuvausta.'}</p>
+            <p><strong>Kuvaus:</strong> ${spot.description || 'Ei kuvausta.'}</p>
+            <p><strong>Leveysaste:</strong> ${spot.latitude}</p>
+            <p><strong>Pituusaste:</strong> ${spot.longitude}</p>
+            <p><strong>Tyyppi:</strong> ${spot.type}</p>
+            <p><strong>Vaikeustaso:</strong> ${spot.difficulty}</p>
+            <p><strong>Suunniteltu retkipäivä:</strong> ${spot.planned_date}</p>
 
             <button class="edit-btn" data-id="${spot.id}">Muokkaa</button>
             <button class="delete-btn" data-id="${spot.id}">Poista</button>
