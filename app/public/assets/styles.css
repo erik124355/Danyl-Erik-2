@@ -78,3 +78,23 @@ button {
 .edit-btn {
     background: #2563eb;
 }
+
+.loading,
+.empty-state,
+.error-state {
+    padding: 16px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.loading {
+    color: #93c5fd;
+}
+
+.empty-state {
+    color: #facc15;
+}
+
+.error-state {
+    color: #fca5a5;
+}

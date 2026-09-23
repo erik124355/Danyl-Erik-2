@@ -30,11 +30,12 @@
         <div id="message" class="message"></div>
 
         <div id="spots" class="cards"></div>
+
+<script src="/assets/app.js"></script>
     </div>
 
     <script>
         window.initialSpots = <?php echo json_encode($spots, JSON_UNESCAPED_UNICODE); ?>;
     </script>
-    <script src="/assets/app.js"></script>
 </body>
 </html>

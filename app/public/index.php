@@ -119,7 +119,10 @@ if (
     try {
         $pdo = Database::getConnection();
         $stmt = $pdo->query(
-            'SELECT id, name, location, description, latitude, longitude, type, difficulty, planned_date FROM hiking_spots ORDER BY id ASC'
+            'SELECT id, name, location, description,
+                   latitude, longitude, type, difficulty, planned_date
+            FROM hiking_spots
+            ORDER BY id ASC'
         );
         $spots = $stmt->fetchAll();
 
